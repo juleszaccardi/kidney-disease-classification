@@ -108,6 +108,9 @@ function createFeatures(dataFolder::String, dataSet::String)
 
             createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
 
+            features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
+
+
 		  end
 
 		  if dataSet == "other"
