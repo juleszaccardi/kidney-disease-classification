@@ -3,3 +3,4 @@ doc/CM.pdf doc/Fiche_notations.pdf doc/Sujet_projet.pdf
 doc/.CM.pdf.icloud
 .ipynb_checkpoints/data explo-checkpoint.ipynb
 data explo.ipynb
+.DS_Store
