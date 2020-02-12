@@ -106,14 +106,10 @@ function createFeatures(dataFolder::String, dataSet::String)
             
             createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
             
-            createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
+            createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)   
             
-
-
-				createColumns(:Age, [0, 17, 50, Inf], rawData, features)
-
-				features.Sex = ifelse.(rawData.Sex .== "female", 1, 0)
-
+            features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
+         
 
 		  end
 
