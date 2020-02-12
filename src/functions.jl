@@ -99,7 +99,11 @@ function createFeatures(dataFolder::String, dataSet::String)
 
         if dataSet == "kidney"
 
-            #TODO
+            # Add the column related to the class (always do it first!)
+            # Data is contained in strings; we have to numerise it
+            features.class = rawData.class
+            features.class = ifelse.(dataset.class == "ckd", 1, 0)
+
 
         end
 
