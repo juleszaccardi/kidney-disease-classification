@@ -101,8 +101,11 @@ function createFeatures(dataFolder::String, dataSet::String)
 
             # Add the column related to the class (always do it first!)
             # Data is contained in strings; we have to numerise it
-            features.class = rawData.class
-            features.class = ifelse.(dataset.class == "ckd", 1, 0)
+            features.class = ifelse.(rawData.class .== "cdk",1,0)
+            
+            createColumns(:Age, [0, 17, 50, Inf], rawData, features)
+            
+            features.Sex = ifelse.(rawData.Sex .== "female", 1, 0)
 
 
         end
