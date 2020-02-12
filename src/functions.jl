@@ -48,7 +48,7 @@ function createFeatures(dataFolder::String, dataSet::String)
 	 testDataPath = dataFolder * dataSet * "_test.csv"
 
 	 # If the train or the test file do not exist
-	 if !isfile(trainDataPath) || !isfile(testDataPath)
+	 if true #!isfile(trainDataPath) || !isfile(testDataPath)
 
 		  println("=== Creating the features")
 
@@ -103,17 +103,10 @@ function createFeatures(dataFolder::String, dataSet::String)
             # Add the column related to the class (always do it first!)
             # Data is contained in strings; we have to numerise it
             features.class = ifelse.(rawData.class .== "cdk",1,0)
-            
+
             createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
-            
+
             createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
-            
-
-
-				createColumns(:Age, [0, 17, 50, Inf], rawData, features)
-
-				features.Sex = ifelse.(rawData.Sex .== "female", 1, 0)
-
 
 		  end
 
