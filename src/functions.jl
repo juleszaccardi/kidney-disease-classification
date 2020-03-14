@@ -102,13 +102,15 @@ function createFeatures(dataFolder::String, dataSet::String)
 
             # Add the column related to the class (always do it first!)
             # Data is contained in strings; we have to numerise it
-            features.class = ifelse.(rawData.class .== "cdk",1,0)
+            features.class = ifelse.(rawData.class .== "ckd",1,0)
 
-            createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
+            #createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
 
-            createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
+            #createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
 
-            features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
+			features.pcc = ifelse.(rawData.pcc .== "no", 1, 0)
+			features.cad = ifelse.(rawData.cad .== "no", 1, 0)
+            #features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
 
 
 		  end
@@ -196,7 +198,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 			iter = 1
 			s_x_bar = n
 
-			m = Model(solver = CplexSolver())
+			m = Model(with_optimizer(CPLEX.Optimizer))
 
 			@variable(m, x[i in 1:n], Bin)
 			@variable(m,b[j in 1:d], Bin)
@@ -204,7 +206,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 			@constraint(m, constraint1[i in 1:n, j in 1:d], x[i]<=1+(t[i,j]-1)*b[j])
 			@constraint(m, constraint2[i=1:n], x[i]>=1+sum((t[i,j]-1)*b[j] for j=1:d))
 			@constraint(m, constraint3, sum(x[i] for i=1:n)<= s_x_bar)
-			println("l 142")
+			#println("l 142")
 
 			@objective(m, Max, sum(x[i] for i in 1:n if transactionClass[i,1]==y)
 													- RgenX *sum(x[i]  for i in 1:n)
@@ -214,17 +216,23 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
 			while(s_x_bar >= n * mincovy)
 
-				println("l 149")
+				println("___ current iteration : ", iter)
+				#println("l 149")
 				if iter == 1
 				 	#update constraint
-				 	JuMP.setRHS(constraint3, s_x_bar)
-					solve(m)
-					vx=getvalue(x)
-					vb=round.(Int, getvalue(b))
+				 	JuMP.set_normalized_rhs(constraint3, s_x_bar)
+					optimize!(m)
+					vx=JuMP.value.(x)
+					vb=round.(Int, JuMP.value.(b))
+					println("VB VB VB VB ")
+					println(vb)
+					#println(transactionClass[i,1] for i=1:n)
 					s_bar=sum(vx[i] for i=1:n if transactionClass[i,1]==y)
+
 					iter= iter+1
 				end
 
+				#vb=round.(Int, JuMP.value.(b))
 				rule=convert(DataFrame, hcat(append!([y],vb)...))
 
 				s=sum(vb)	#we only add non-null rules
@@ -243,14 +251,14 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
 				if iter < iterlim
 				# Resoudre Ps_bar x
-					solve(m)
-					vx=getvalue(x)
-					vb=round.(Int, getvalue(b))
+					optimize!(m)
+					vx=JuMP.value.(x)
+					vb=round.(Int, JuMP.value.(b))
 					if sum(vx[i] for i=1:n if transactionClass[i,1]==y) <s_bar
-					s_x_bar=min(s_x_bar-1, sum(vx[i] for i=1:n))
-					iter=1
+						s_x_bar=min(s_x_bar-1, sum(vx[i] for i=1:n))
+						iter=1
 					else
-					iter=iter+1
+						iter=iter+1
 					end
 				 else
 				 	s_x_bar= s_x_bar-1
@@ -352,7 +360,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
 		  v = abs.(p)
 
 		  ################
-		  # Create and solve the model
+		  # Create and optimize! the model
 		  ###############
 		  m = Model(with_optimizer(CPLEX.Optimizer))
 		  set_parameter(m, "CPX_PARAM_TILIM", tilim)
@@ -423,7 +431,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
 
 		  # Number of rules kept in the classifier
 		  # (all the rules ranked lower than rstar are removed)
-		  relevantNbOfRules=L-trunc(Int, JuMP.value(rstar))+1
+		  relevantNbOfRules=L-trunc(Int, JuMP.value.(rstar))+1
 
 		  # Sort the rules and their class by decreasing rank
 		  rulesOrder = JuMP.value.(r)
