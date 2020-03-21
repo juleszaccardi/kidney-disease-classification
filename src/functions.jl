@@ -104,16 +104,25 @@ function createFeatures(dataFolder::String, dataSet::String)
             # Data is contained in strings; we have to numerise it
             features.class = ifelse.(rawData.class .== "ckd",1,0)
 
-            createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
+#             createColumns(:age, [0, 53, 58, 61, Inf], rawData, features)
 
-            #createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
+#             createColumns(:sg, [0, 1.015, 1.020, Inf], rawData, features)
             
-            createColumns(:hemo, [0, 12,85, Inf], rawData, features)
+#             createColumns(:hemo, [0, 12.85, Inf], rawData, features)
 # 			features.pcc = ifelse.(rawData.pcc .== "no", 1, 0)
 # 			features.cad = ifelse.(rawData.cad .== "no", 1, 0)
-            #features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
-            features.htn = ifelse.(rawData.cad .== "no", 1, 0)
-            features.dm = ifelse.(rawData.cad .== "no", 1, 0)
+            features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
+            features.htn = ifelse.(rawData.htn .== "no", 1, 0)
+#             features.dm = ifelse.(rawData.dm .== "no", 1, 0)
+#             createColumns(:Age, [0, 17, 50, Inf], rawData, features)
+#             features.al = ifelse.(rawData.al .>= 2, 1, 0)
+
+            
+#             for a in sort(unique(rawData.al))
+
+# 					 # Create 1 feature column named "Class1", "Class2" or "Class3"
+# 					 features[!, Symbol("Alb", a)] = ifelse.(rawData.al .<= a, 1, 0)
+# 				end
 
 
 		  end
