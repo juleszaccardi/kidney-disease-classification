@@ -112,6 +112,8 @@ function createFeatures(dataFolder::String, dataSet::String)
 # 			features.pcc = ifelse.(rawData.pcc .== "no", 1, 0)
 # 			features.cad = ifelse.(rawData.cad .== "no", 1, 0)
             #features.pc = ifelse.(rawData.pc .== "normal", 1, 0)
+            features.htn = ifelse.(rawData.cad .== "no", 1, 0)
+            features.dm = ifelse.(rawData.cad .== "no", 1, 0)
 
 
 		  end
